@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
@@ -28,6 +28,7 @@
         "url": "https://github.com/AnWeber/vscode-swapf/issues"
     },
     "main": "./dist/extension.js",
+    "browser": "./dist/extension.js",
     "capabilities": {
         "virtualWorkspaces": true,
         "untrustedWorkspaces": {
