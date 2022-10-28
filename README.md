@@ -27,7 +27,7 @@ Allow swapping between `ts`, `js`, `html`, `css`, `spec.ts`, ... with same file 
 
 ### Java File Structure
 
-Allow swapping between `ts`, `js`, `html`, `css`, `scss`, ... with same file name
+Allow swapping between Java Source and Java Test File
 
 ```json
 [
