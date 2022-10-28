@@ -1,0 +1,4 @@
+{
+  "gitlens.statusBar.pullRequests.enabled": true,
+  "editor.formatOnSave": true
+}

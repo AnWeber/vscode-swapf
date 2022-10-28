@@ -1,0 +1,200 @@
+{
+    "name": "swapf",
+    "displayName": "SwapF",
+    "description": "swap between related files",
+    "version": "1.0.0",
+    "publisher": "anweber",
+    "license": "ISC",
+    "engines": {
+        "vscode": "^1.72.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "keywords": [
+        "statusbar",
+        "command",
+        "toolbar"
+    ],
+    "icon": "icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AnWeber/vscode-swapf"
+    },
+    "bugs": {
+        "url": "https://github.com/AnWeber/vscode-swapf/issues"
+    },
+    "main": "./dist/extension.js",
+    "capabilities": {
+        "virtualWorkspaces": true,
+        "untrustedWorkspaces": {
+            "supported": true
+        }
+    },
+    "contributes": {
+        "commands": [
+            {
+                "command": "swapf.swap",
+                "title": "Swap",
+                "category": "swapf",
+                "icon": "$(chevron-right)"
+            },
+            {
+                "command": "swapf.swapRight",
+                "title": "Swap Right",
+                "category": "swapf",
+                "icon": "$(chevron-right)"
+            },
+            {
+                "command": "swapf.swapLeft",
+                "title": "Swap Left",
+                "category": "swapf",
+                "icon": "$(chevron-left)"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "swapf.swap",
+                "key": "ctrl+b",
+                "mac": "ctrl+b",
+                "when": "editorTextFocus && swapf.hasAlternatives"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "swapf.swapRight",
+                    "when": "config.swapf.menus.editorTitle && swapf.hasAlternatives",
+                    "group": "navigation"
+                },
+                {
+                    "command": "swapf.swapLeft",
+                    "when": "config.swapf.menus.editorTitle && swapf.hasAlternatives",
+                    "group": "navigation"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "swapf.swap",
+                    "when": "config.swapf.menus.editorContext && swapf.hasAlternatives",
+                    "group": "navigation"
+                }
+            ]
+        },
+        "configuration": {
+            "type": "object",
+            "title": "SwapF",
+            "properties": {
+                "swapf.menus": {
+                    "title": "SwapF Menu configuration",
+                    "description": "show SwapF in menu",
+                    "type": "object",
+                    "properties": {
+                        "editorContext": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/context"
+                        },
+                        "editorTitle": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/title"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "default": {
+                        "editorContext": true,
+                        "editorTitle": true
+                    }
+                },
+                "swapf.patterns": {
+                    "type": "array",
+                    "description": "list of pattern configuration to search for",
+                    "items": {
+                        "type": "object",
+                        "scope": "application",
+                        "properties": {
+                            "pattern": {
+                                "type": "string",
+                                "scope": "application",
+                                "description": "pattern to detect switchable files",
+                                "default": true
+                            },
+                            "alternatives": {
+                                "type": "array",
+                                "scope": "application",
+                                "description": "Alternatives to current pattern",
+                                "items": {
+                                    "type": "string",
+                                    "scope": "application",
+                                    "description": "pattern for alternatives"
+                                }
+                            }
+                        },
+                        "description": "settings for Status Bar Item",
+                        "default": {}
+                    },
+                    "default": [
+                        {
+                            "pattern": "^(?<path>.*?)(ts|js|css|sass|scss|html|spec.ts|spec.js|test.js|test.ts)$",
+                            "alternatives": [
+                                "**/<path>{ts,js,css,sass,scss,html,spec.js,spec.ts}"
+                            ]
+                        },
+                        {
+                            "pattern": "^(?<rootPath>.*?)(main|test)(?<path>.*?)(Test)?.(java|kt)$",
+                            "alternatives": [
+                                "**/<rootPath>{main,test}<path>*.{java,kt}"
+                            ]
+                        },
+                        {
+                            "pattern": "^.*?(?<file>[^\/]*)$",
+                            "alternatives": [
+                                "**/<file>"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "scripts": {
+        "format": "prettier --write --parser typescript \"src/**/*.ts?(x)\"",
+        "vscode:prepublish": "npm run compile",
+        "esbuild": "esbuild ./src/extension.ts --bundle --outdir=dist/ --sourcemap --platform=node --external:vscode --format=cjs",
+        "compile": "npm run esbuild -- --minify",
+        "watch": "npm run esbuild -- --sourcemap --watch",
+        "tsc-watch": "tsc --watch",
+        "lockfile-lint": "lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm --validate-checksum --validate-integrity",
+        "eslint": "eslint src --ext ts",
+        "lint": "npm run format && npm run eslint && npm run lockfile-lint && tsc --noEmit",
+        "prepare": "husky install",
+        "package": "npx vsce package"
+    },
+    "lint-staged": {
+        "*.js": [
+            "prettier --write"
+        ],
+        "*.ts?(x)": [
+            "eslint --cache --fix",
+            "prettier --parser=typescript --write"
+        ]
+    },
+    "devDependencies": {
+        "@types/node": "^18.11.7",
+        "@types/vscode": "^1.72.0",
+        "@typescript-eslint/eslint-plugin": "5.41.0",
+        "@typescript-eslint/parser": "5.41.0",
+        "esbuild": "^0.15.12",
+        "eslint": "^8.26.0",
+        "eslint-config-prettier": "^8.5.0",
+        "husky": "^8.0.1",
+        "lint-staged": "^13.0.3",
+        "lockfile-lint": "^4.9.6",
+        "prettier": "^2.7.1",
+        "typescript": "^4.8.4"
+    }
+}
