@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
@@ -41,19 +41,25 @@
                 "command": "swapf.swap",
                 "title": "Swap",
                 "category": "swapf",
-                "icon": "$(chevron-right)"
+                "icon": "$(arrow-swap)"
             },
             {
                 "command": "swapf.swapRight",
                 "title": "Swap Right",
                 "category": "swapf",
-                "icon": "$(chevron-right)"
+                "icon": "$(arrow-right)"
             },
             {
                 "command": "swapf.swapLeft",
                 "title": "Swap Left",
                 "category": "swapf",
-                "icon": "$(chevron-left)"
+                "icon": "$(arrow-left)"
+            },
+            {
+                "command": "swapf.swapPick",
+                "title": "Swap Pick",
+                "category": "swapf",
+                "icon": "$(arrow-both)"
             }
         ],
         "keybindings": [
@@ -68,19 +74,44 @@
             "editor/title": [
                 {
                     "command": "swapf.swapRight",
-                    "when": "config.swapf.menus.editorTitle && swapf.hasAlternatives",
+                    "when": "config.swapf.menus.enableSwapRightInEditorTitle && swapf.hasAlternatives",
+                    "group": "navigation"
+                },
+                {
+                    "command": "swapf.swap",
+                    "when": "config.swapf.menus.enableSwapInEditorTitle && swapf.hasAlternatives",
+                    "group": "navigation"
+                },
+                {
+                    "command": "swapf.swapPick",
+                    "when": "config.swapf.menus.enableSwapPickInEditorTitle && swapf.hasAlternatives",
                     "group": "navigation"
                 },
                 {
                     "command": "swapf.swapLeft",
-                    "when": "config.swapf.menus.editorTitle && swapf.hasAlternatives",
+                    "when": "config.swapf.menus.enableSwapLeftInEditorTitle && swapf.hasAlternatives",
                     "group": "navigation"
                 }
             ],
             "editor/context": [
                 {
+                    "command": "swapf.swapRight",
+                    "when": "config.swapf.menus.enableSwapRightInEditorContext && swapf.hasAlternatives",
+                    "group": "navigation"
+                },
+                {
                     "command": "swapf.swap",
-                    "when": "config.swapf.menus.editorContext && swapf.hasAlternatives",
+                    "when": "config.swapf.menus.enableSwapInEditorContext && swapf.hasAlternatives",
+                    "group": "navigation"
+                },
+                {
+                    "command": "swapf.swapPick",
+                    "when": "config.swapf.menus.enableSwapPickInEditorContext && swapf.hasAlternatives",
+                    "group": "navigation"
+                },
+                {
+                    "command": "swapf.swapLeft",
+                    "when": "config.swapf.menus.enableSwapLeftInEditorContext && swapf.hasAlternatives",
                     "group": "navigation"
                 }
             ]
@@ -94,12 +125,42 @@
                     "description": "show SwapF in menu",
                     "type": "object",
                     "properties": {
-                        "editorContext": {
+                        "enableSwapRightInEditorContext": {
                             "type": "boolean",
                             "default": false,
                             "description": "editor/context"
                         },
-                        "editorTitle": {
+                        "enableSwapRightInEditorTitle": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/title"
+                        },
+                        "enableSwapLeftInEditorContext": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/context"
+                        },
+                        "enableSwapLeftInEditorTitle": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/title"
+                        },
+                        "enableSwapInEditorContext": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/context"
+                        },
+                        "enableSwapInEditorTitle": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/title"
+                        },
+                        "enableSwapPickInEditorContext": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "editor/context"
+                        },
+                        "enableSwapPickInEditorTitle": {
                             "type": "boolean",
                             "default": false,
                             "description": "editor/title"
@@ -107,9 +168,41 @@
                     },
                     "additionalProperties": false,
                     "default": {
-                        "editorContext": true,
-                        "editorTitle": true
+                        "enableSwapRightInEditorContext": false,
+                        "enableSwapRightInEditorTitle": true,
+                        "enableSwapLeftInEditorContext": false,
+                        "enableSwapLeftInEditorTitle": true,
+                        "enableSwapInEditorContext": true,
+                        "enableSwapInEditorTitle": false,
+                        "enableSwapPickInEditorContext": false,
+                        "enableSwapPickInEditorTitle": false
                     }
+                },
+                "swapf.textDocumentShowOptions": {
+                    "type": "object",
+                    "scope": "application",
+                    "properties": {
+                        "preview": {
+                            "type": "boolean",
+                            "scope": "application",
+                            "description": "An optional flag that controls if an editor-tab shows as preview",
+                            "default": true
+                        },
+                        "viewColumn": {
+                            "type": "number",
+                            "scope": "application",
+                            "description": "An optional view column in which the editor should be shown",
+                            "default": -1
+                        },
+                        "preserveFocus": {
+                            "type": "boolean",
+                            "scope": "application",
+                            "description": " An optional flag that when `true` will stop the editor from taking focus",
+                            "default": false
+                        }
+                    },
+                    "description": "settings for Status Bar Item",
+                    "default": {}
                 },
                 "swapf.patterns": {
                     "type": "array",
@@ -123,6 +216,12 @@
                                 "scope": "application",
                                 "description": "pattern to detect switchable files",
                                 "default": true
+                            },
+                            "force": {
+                                "type": "boolean",
+                                "scope": "application",
+                                "description": "use pattern even if other results already exist",
+                                "default": false
                             },
                             "alternatives": {
                                 "type": "array",
@@ -140,15 +239,29 @@
                     },
                     "default": [
                         {
-                            "pattern": "^(?<path>.*?)(ts|js|css|sass|scss|html|spec.ts|spec.js|test.js|test.ts)$",
+                            "pattern": "^(?<path>.*?)\\.(ts|js|css|sass|scss|html|spec.ts|spec.js|test.js|test.ts)$",
                             "alternatives": [
-                                "**/<path>{ts,js,css,sass,scss,html,spec.js,spec.ts}"
+                                "**/<path>.{ts,js,css,sass,scss,html,spec.js,spec.ts}"
                             ]
                         },
                         {
                             "pattern": "^(?<rootPath>.*?)(main|test)(?<path>.*?)(Test)?.(java|kt)$",
                             "alternatives": [
-                                "**/<rootPath>{main,test}<path>*.{java,kt}"
+                                "**/<rootPath>{main,test}<path>.{java,kt}",
+                                "**/<rootPath>{main,test}<path>Test.{java,kt}"
+                            ]
+                        },
+                        {
+                            "pattern": "^(?<path>.*?)(cpp|c|cc|cxx|m|mm|h|hpp|hh|hxx)$",
+                            "alternatives": [
+                                "**/<path>{cpp,c,cc,cxx,m,mm,h,hpp,hh,hxx}"
+                            ]
+                        },
+                        {
+                            "pattern": "^(?<path>.*?)(cs)$",
+                            "alternatives": [
+                                "**/<path>cs",
+                                "**/<path>*.cs"
                             ]
                         },
                         {

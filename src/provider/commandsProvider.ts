@@ -27,6 +27,7 @@ export class CommandsProvider extends DisposeProvider {
       }),
       vscode.window.onDidChangeActiveTextEditor(this.onDidChangeActiveTextEditor, this),
       vscode.commands.registerCommand('swapf.swap', this.swapRight, this),
+      vscode.commands.registerCommand('swapf.swapPick', this.swapPick, this),
       vscode.commands.registerCommand('swapf.swapRight', this.swapRight, this),
       vscode.commands.registerCommand('swapf.swapLeft', this.swapLeft, this),
     ];
@@ -66,7 +67,7 @@ export class CommandsProvider extends DisposeProvider {
     let isPatternMatch = false;
     for (const pattern of this.#patterns) {
       const match = pattern.regex.exec(relativeFile);
-      if (match?.groups && pattern.alternatives) {
+      if (match?.groups && pattern.alternatives && (result.length === 0 || pattern.force)) {
         isPatternMatch = true;
         this.#channel.appendLine(`  matches ${pattern.pattern}`);
         for (const [key, value] of Object.entries(match.groups)) {
@@ -143,9 +144,23 @@ export class CommandsProvider extends DisposeProvider {
     }
   }
 
-  private async openUri(uri: vscode.Uri): Promise<void> {
-    const document = await vscode.workspace.openTextDocument(uri);
-    await vscode.window.showTextDocument(document);
+  private async swapPick() {
+    if (this.#currentUris) {
+      const picks = this.#currentUris.map(uri => ({ uri, label: uri.toString(), picked: true }));
+      const selectedPicks = await vscode.window.showQuickPick(picks, {
+        canPickMany: true,
+      });
+
+      if (selectedPicks) {
+        for (const pick of selectedPicks) {
+          await this.openUri(pick.uri, { preview: false });
+        }
+      }
+    }
+  }
+
+  private async openUri(uri: vscode.Uri, options?: vscode.TextDocumentShowOptions): Promise<void> {
+    await vscode.window.showTextDocument(uri, Object.assign({}, getConfig().get('textDocumentShowOptions'), options));
   }
 
   private getCurrentIndex() {

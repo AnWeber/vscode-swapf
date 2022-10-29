@@ -6,9 +6,11 @@ export function getConfig(): SwapFConfiguration {
 
 export interface SwapFConfiguration {
   get(section: 'patterns'): Array<SwapFAlternative> | undefined;
+  get(section: 'textDocumentShowOptions'): vscode.TextDocumentShowOptions | undefined;
 }
 
 export interface SwapFAlternative {
   pattern: string | undefined;
   alternatives: Array<string>;
+  force: boolean;
 }

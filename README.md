@@ -38,6 +38,32 @@ Allow swapping between Java Source and Java Test File
 ]
 ```
 
+### Header and Source
+
+Allow swapping between Header and Source File
+
+```json
+[
+  {
+    "pattern": "^(?<path>.*?)(cpp|c|cc|cxx|m|mm|h|hpp|hh|hxx)$",
+    "alternatives": ["**/<path>{cpp,c,cc,cxx,m,mm,h,hpp,hh,hxx}"]
+  }
+]
+```
+
+### CS Source and Designer File
+
+Allow swapping between C# Source File and Additional Designer File
+
+```json
+[
+  {
+    "pattern": "^(?<path>.*?)(cs)$",
+    "alternatives": ["**/<path>cs", "**/<path>*.cs"]
+  }
+]
+```
+
 ### Same Filename
 
 Allow swapping between same file name, like `package.json`
