@@ -1,3 +1,8 @@
+## v1.2.0
+
+- change editor/title button position to be higher then gitlens
+- change sort order for ts alternatives
+
 ## v1.1.0
 
 - add `swapf.swapPick` to open selected uris

@@ -75,22 +75,22 @@
                 {
                     "command": "swapf.swapRight",
                     "when": "config.swapf.menus.enableSwapRightInEditorTitle && swapf.hasAlternatives",
-                    "group": "navigation"
+                    "group": "navigation@1000"
                 },
                 {
                     "command": "swapf.swap",
                     "when": "config.swapf.menus.enableSwapInEditorTitle && swapf.hasAlternatives",
-                    "group": "navigation"
+                    "group": "navigation@1000"
                 },
                 {
                     "command": "swapf.swapPick",
                     "when": "config.swapf.menus.enableSwapPickInEditorTitle && swapf.hasAlternatives",
-                    "group": "navigation"
+                    "group": "navigation@1000"
                 },
                 {
                     "command": "swapf.swapLeft",
                     "when": "config.swapf.menus.enableSwapLeftInEditorTitle && swapf.hasAlternatives",
-                    "group": "navigation"
+                    "group": "navigation@1000"
                 }
             ],
             "editor/context": [
@@ -241,7 +241,10 @@
                         {
                             "pattern": "^(?<path>.*?)\\.(ts|js|css|sass|scss|html|spec.ts|spec.js|test.js|test.ts)$",
                             "alternatives": [
-                                "**/<path>.{ts,js,css,sass,scss,html,spec.js,spec.ts}"
+                                "**/<path>.{ts,js}",
+                                "**/<path>.html",
+                                "**/<path>.{css,sass,scss}",
+                                "**/<path>.{spec.js,spec.ts}"
                             ]
                         },
                         {
@@ -298,14 +301,14 @@
         ]
     },
     "devDependencies": {
-        "@types/node": "^18.11.7",
+        "@types/node": "^18.11.9",
         "@types/vscode": "^1.72.0",
-        "@typescript-eslint/eslint-plugin": "5.41.0",
-        "@typescript-eslint/parser": "5.41.0",
-        "esbuild": "^0.15.12",
-        "eslint": "^8.26.0",
+        "@typescript-eslint/eslint-plugin": "5.42.1",
+        "@typescript-eslint/parser": "5.42.1",
+        "esbuild": "^0.15.13",
+        "eslint": "^8.27.0",
         "eslint-config-prettier": "^8.5.0",
-        "husky": "^8.0.1",
+        "husky": "^8.0.2",
         "lint-staged": "^13.0.3",
         "lockfile-lint": "^4.9.6",
         "prettier": "^2.7.1",
