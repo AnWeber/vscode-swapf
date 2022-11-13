@@ -128,42 +128,42 @@
                         "enableSwapRightInEditorContext": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/context"
+                            "description": "swap right in editor/context"
                         },
                         "enableSwapRightInEditorTitle": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/title"
+                            "description": "swap right in editor/title"
                         },
                         "enableSwapLeftInEditorContext": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/context"
+                            "description": "swap left in editor/context"
                         },
                         "enableSwapLeftInEditorTitle": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/title"
+                            "description": "wap left in editor/title"
                         },
                         "enableSwapInEditorContext": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/context"
+                            "description": "wap in editor/context"
                         },
                         "enableSwapInEditorTitle": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/title"
+                            "description": "swap in editor/title"
                         },
                         "enableSwapPickInEditorContext": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/context"
+                            "description": "swap pick in editor/context"
                         },
                         "enableSwapPickInEditorTitle": {
                             "type": "boolean",
                             "default": false,
-                            "description": "editor/title"
+                            "description": "swap pick in editor/title"
                         }
                     },
                     "additionalProperties": false,
