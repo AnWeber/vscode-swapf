@@ -1,3 +1,7 @@
+## v1.3.0
+
+- add go test naming convention
+
 ## v1.2.0
 
 - change editor/title button position to be higher then gitlens
