@@ -1,3 +1,7 @@
+## v1.4.0
+
+- support tsx and jsx files
+
 ## v1.3.0
 
 - add go test naming convention

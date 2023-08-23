@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
@@ -241,8 +241,8 @@
                         {
                             "pattern": "^(?<path>.*?)\\.(ts|js|css|sass|scss|html|spec.ts|spec.js|test.js|test.ts)$",
                             "alternatives": [
-                                "**/<path>.{ts,js}",
-                                "**/<path>.html",
+                                "**/<path>.{ts,tsx,js,jsx}",
+                                "**/<path>.{html,htm}",
                                 "**/<path>.{css,sass,scss}",
                                 "**/<path>.{spec.js,spec.ts}"
                             ]
