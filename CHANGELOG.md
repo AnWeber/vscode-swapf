@@ -1,3 +1,8 @@
+## v1.4.1
+
+- tsx and jsx is used in pattern to start swap from tsx files
+
+
 ## v1.4.0
 
 - support tsx and jsx files
