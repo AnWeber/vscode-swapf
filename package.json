@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
@@ -15,7 +15,6 @@
         "onStartupFinished"
     ],
     "keywords": [
-        "statusbar",
         "command",
         "toolbar"
     ],
@@ -60,6 +59,12 @@
                 "title": "Swap Pick",
                 "category": "swapf",
                 "icon": "$(arrow-both)"
+            },
+            {
+                "command": "swapf.createSwapFiles",
+                "title": "Swap Create",
+                "category": "swapf",
+                "icon": "$(new-file)"
             }
         ],
         "keybindings": [
@@ -68,6 +73,12 @@
                 "key": "ctrl+b",
                 "mac": "ctrl+b",
                 "when": "editorTextFocus && swapf.hasAlternatives"
+            },
+            {
+                "command": "swapf.createSwapFiles",
+                "key": "ctrl+i",
+                "mac": "ctrl+i",
+                "when": "editorTextFocus && swapf.hasPatterns"
             }
         ],
         "menus": {
@@ -91,6 +102,11 @@
                     "command": "swapf.swapLeft",
                     "when": "config.swapf.menus.enableSwapLeftInEditorTitle && swapf.hasAlternatives",
                     "group": "navigation@1000"
+                },
+                {
+                    "command": "swapf.createSwapFiles",
+                    "when": "config.swapf.menus.enableSwapcreateSwapFilesInEditorTitle && swapf.hasPatterns",
+                    "group": "navigation@1000"
                 }
             ],
             "editor/context": [
@@ -112,6 +128,11 @@
                 {
                     "command": "swapf.swapLeft",
                     "when": "config.swapf.menus.enableSwapLeftInEditorContext && swapf.hasAlternatives",
+                    "group": "navigation"
+                },
+                {
+                    "command": "swapf.createSwapFiles",
+                    "when": "config.swapf.menus.enableSwapcreateSwapFilesInEditorContext && swapf.hasPatterns",
                     "group": "navigation"
                 }
             ]
@@ -143,17 +164,27 @@
                         "enableSwapLeftInEditorTitle": {
                             "type": "boolean",
                             "default": false,
-                            "description": "wap left in editor/title"
+                            "description": "swap left in editor/title"
                         },
                         "enableSwapInEditorContext": {
                             "type": "boolean",
                             "default": false,
-                            "description": "wap in editor/context"
+                            "description": "swap in editor/context"
                         },
                         "enableSwapInEditorTitle": {
                             "type": "boolean",
                             "default": false,
                             "description": "swap in editor/title"
+                        },
+                        "enableSwapcreateSwapFilesInEditorContext": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "swap create missing files in editor/context"
+                        },
+                        "enableSwapcreateSwapFilesInEditorTitle": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "swap create missing files in editor/title"
                         },
                         "enableSwapPickInEditorContext": {
                             "type": "boolean",
@@ -173,6 +204,8 @@
                         "enableSwapLeftInEditorContext": false,
                         "enableSwapLeftInEditorTitle": true,
                         "enableSwapInEditorContext": true,
+                        "enableSwapcreateSwapFilesInEditorContext": true,
+                        "enableSwapcreateSwapFilesInEditorTitle": false,
                         "enableSwapInEditorTitle": false,
                         "enableSwapPickInEditorContext": false,
                         "enableSwapPickInEditorTitle": false
@@ -232,6 +265,14 @@
                                     "scope": "application",
                                     "description": "pattern for alternatives"
                                 }
+                            },
+                            "createFiles": {
+                                "type": "object",
+                                "scope": "application",
+                                "description": "path for files to create if it does not exists",
+                                "additionalProperty": {
+                                    "type": "boolean"
+                                }
                             }
                         },
                         "description": "settings for Status Bar Item",
@@ -245,21 +286,35 @@
                                 "**/<path>.{html,htm}",
                                 "**/<path>.{css,sass,scss,less}",
                                 "**/<path>.{spec.js,spec.ts,test.js,test.ts}"
-                            ]
+                            ],
+                            "createFiles": {
+                                "<path>.ts": true,
+                                "<path>.scss": true,
+                                "<path>.spec.ts": true,
+                                "<path>.html": false
+                            }
                         },
                         {
                             "pattern": "^(?<path>.*?)(\\.go|_test\\.go)$",
                             "alternatives": [
                                 "**/<path>.go",
                                 "**/<path>_test.go"
-                            ]
+                            ],
+                            "createFiles": {
+                                "<path>.go": true,
+                                "<path>_test.go": true
+                            }
                         },
                         {
-                            "pattern": "^(?<rootPath>.*?)(main|test)(?<path>.*?)(Test)?.(java|kt)$",
+                            "pattern": "^(?<rootPath>.*?)(main|test)(?<path>.*?)(Test)?.(?<ext>java|kt)$",
                             "alternatives": [
                                 "**/<rootPath>{main,test}<path>.{java,kt}",
                                 "**/<rootPath>{main,test}<path>Test.{java,kt}"
-                            ]
+                            ],
+                            "createFiles": {
+                                "<rootPath>main<path>.<ext>": true,
+                                "<rootPath>test<path>Test.<ext>": true
+                            }
                         },
                         {
                             "pattern": "^(?<path>.*?)(cpp|c|cc|cxx|m|mm|h|hpp|hh|hxx)$",
@@ -290,7 +345,7 @@
         "vscode:prepublish": "npm run build",
         "esbuild": "esbuild ./src/extension.ts --bundle --outdir=dist/ --sourcemap --platform=node --external:vscode --format=cjs",
         "build": "npm run esbuild -- --minify",
-        "watch": "npm run esbuild -- --sourcemap --watch",
+        "start": "npm run esbuild -- --sourcemap --watch",
         "tsc-watch": "tsc --watch",
         "lockfile-lint": "lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm --validate-checksum --validate-integrity",
         "eslint": "eslint src --ext ts",

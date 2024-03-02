@@ -1,3 +1,8 @@
+## v1.5.0
+
+- add new command `swapf.createSwapFiles` to create missing files
+
+
 ## v1.4.1
 
 - tsx and jsx is used in pattern to start swap from tsx files

@@ -2,9 +2,16 @@ import * as vscode from 'vscode';
 import { DisposeProvider } from './disposeProvider';
 import { SwapFAlternative, getConfig } from '../config';
 
+type RegexSwapAlternative = SwapFAlternative & { regex: RegExp };
+
+type PatternSearchResult = {
+  pattern: RegexSwapAlternative;
+  groups: Record<string, string>;
+};
+
 export class CommandsProvider extends DisposeProvider {
   #currentUris: Array<vscode.Uri> | undefined;
-  #patterns: Array<SwapFAlternative & { regex: RegExp }>;
+  #patterns: Array<RegexSwapAlternative>;
   #channel: vscode.OutputChannel;
   constructor() {
     super();
@@ -30,30 +37,39 @@ export class CommandsProvider extends DisposeProvider {
       vscode.commands.registerCommand('swapf.swapPick', this.swapPick, this),
       vscode.commands.registerCommand('swapf.swapRight', this.swapRight, this),
       vscode.commands.registerCommand('swapf.swapLeft', this.swapLeft, this),
+      vscode.commands.registerCommand('swapf.createSwapFiles', this.createSwapFiles, this),
     ];
     this.onDidChangeActiveTextEditor(vscode.window.activeTextEditor);
   }
 
   private async onDidChangeActiveTextEditor(textEditor: vscode.TextEditor | undefined): Promise<void> {
-    this.setHasAlternatives(false);
+    this.setSwapfContext({
+      hasAlternatives: false,
+      hasPatterns: false,
+    });
     const uri = textEditor?.document?.uri;
     if (!uri) {
       return;
     }
     if (this.#currentUris?.some(obj => this.equalsUri(obj, uri))) {
-      this.setHasAlternatives(true);
       return;
     }
     this.#currentUris = undefined;
 
-    const relativeFile = this.getRelativeFilePath(uri);
-    if (!relativeFile) {
-      return;
-    }
-    const uris = await this.findUrisForRelativeFile(relativeFile);
+    const patterns = this.getPatternsForUri(uri);
+
+    const uris = await this.findUrisForRelativeFile(patterns);
     if (uris.length > 1) {
-      this.setHasAlternatives(true);
+      this.setSwapfContext({
+        hasAlternatives: true,
+        hasPatterns: true,
+      });
       this.#currentUris = uris;
+    } else if (patterns.length > 0) {
+      this.setSwapfContext({
+        hasAlternatives: false,
+        hasPatterns: true,
+      });
     }
   }
 
@@ -61,20 +77,17 @@ export class CommandsProvider extends DisposeProvider {
     return uri1.toString() === uri2.toString();
   }
 
-  private async findUrisForRelativeFile(relativeFile: string) {
+  private async findUrisForRelativeFile(searchResults: Array<PatternSearchResult>) {
     const result: Array<vscode.Uri> = [];
-    this.#channel.appendLine(`${relativeFile}:`);
+
     let isPatternMatch = false;
-    for (const pattern of this.#patterns) {
-      const match = pattern.regex.exec(relativeFile);
-      if (match?.groups && pattern.alternatives && (result.length === 0 || pattern.force)) {
+    for (const s of searchResults) {
+      const pattern = s.pattern;
+      if (result.length === 0 || pattern.force) {
         isPatternMatch = true;
-        this.#channel.appendLine(`  matches ${pattern.pattern}`);
-        for (const [key, value] of Object.entries(match.groups)) {
-          this.#channel.appendLine(`    ${key}=${value}`);
-        }
+        this.logMatchGroups(pattern, s.groups);
         for (const alternative of pattern.alternatives) {
-          const replaced = this.replaceVars(alternative, match.groups);
+          const replaced = this.replaceVars(alternative, s.groups);
           const uris = await this.findNonIgnoredFiles(replaced);
           this.#channel.appendLine(`  found ${uris.length} alternative for ${replaced}`);
           result.push(...uris);
@@ -87,8 +100,32 @@ export class CommandsProvider extends DisposeProvider {
     if (!isPatternMatch) {
       this.#channel.appendLine(`  no pattern matched`);
     }
-
     return result.filter((obj, index, array) => array.findIndex(o => this.equalsUri(o, obj)) === index);
+  }
+
+  private getPatternsForUri(uri: vscode.Uri): Array<PatternSearchResult> {
+    const relativeFile = this.getRelativeFilePath(uri);
+    if (!relativeFile) {
+      return [];
+    }
+    const result: Array<PatternSearchResult> = [];
+    for (const pattern of this.#patterns) {
+      const match = pattern.regex.exec(relativeFile);
+      if (match?.groups && pattern.alternatives) {
+        result.push({
+          pattern,
+          groups: match.groups,
+        });
+      }
+    }
+    return result;
+  }
+
+  private logMatchGroups(pattern: SwapFAlternative & { regex: RegExp }, groups: Record<string, string>) {
+    this.#channel.appendLine(`  matches ${pattern.pattern}`);
+    for (const [key, value] of Object.entries(groups)) {
+      this.#channel.appendLine(`    ${key}=${value}`);
+    }
   }
 
   private replaceVars(alternative: string, values: Record<string, string>) {
@@ -99,8 +136,10 @@ export class CommandsProvider extends DisposeProvider {
     return result;
   }
 
-  private setHasAlternatives(hasAlternatives: boolean) {
-    vscode.commands.executeCommand('setContext', 'swapf.hasAlternatives', hasAlternatives);
+  private setSwapfContext(context: { hasAlternatives: boolean; hasPatterns: boolean }) {
+    for (const [key, value] of Object.entries(context)) {
+      vscode.commands.executeCommand('setContext', `swapf.${key}`, value);
+    }
   }
 
   private async findNonIgnoredFiles(pattern: vscode.GlobPattern) {
@@ -170,5 +209,57 @@ export class CommandsProvider extends DisposeProvider {
     }
 
     return this.#currentUris.findIndex(obj => this.equalsUri(obj, uri));
+  }
+
+  public async createSwapFiles() {
+    const uri = vscode.window.activeTextEditor?.document?.uri;
+    if (!uri) {
+      return;
+    }
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+    const patterns = this.getPatternsForUri(uri);
+
+    for (const p of patterns) {
+      const picks = await this.getValidPicks(p, workspaceFolder?.uri);
+      if (!picks) {
+        continue;
+      }
+      const selectedPicks = await vscode.window.showQuickPick(picks, {
+        canPickMany: true,
+      });
+      if (!selectedPicks) {
+        return;
+      }
+
+      for (const pick of selectedPicks) {
+        try {
+          await vscode.workspace.fs.writeFile(pick.uri, new Uint8Array(0));
+        } catch (err) {
+          this.#channel.appendLine(`${err}`);
+        }
+      }
+      return;
+    }
+  }
+
+  private async getValidPicks({ pattern, groups }: PatternSearchResult, baseUri?: vscode.Uri) {
+    if (!pattern.createFiles) {
+      return undefined;
+    }
+    const picks = Object.entries(pattern.createFiles)
+      ?.map(([file, picked]) => ({ label: this.replaceVars(file, groups), picked }))
+      .map(obj => ({
+        ...obj,
+        uri: baseUri ? vscode.Uri.joinPath(baseUri, obj.label) : vscode.Uri.file(obj.label),
+      }));
+    const result = [];
+    for (const p of picks) {
+      try {
+        await vscode.workspace.fs.stat(p.uri);
+      } catch {
+        result.push(p);
+      }
+    }
+    return result;
   }
 }

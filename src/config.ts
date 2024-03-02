@@ -13,4 +13,5 @@ export interface SwapFAlternative {
   pattern: string | undefined;
   alternatives: Array<string>;
   force: boolean;
+  createFiles?: Record<string, boolean>;
 }
