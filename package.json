@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
@@ -280,6 +280,21 @@
                     },
                     "default": [
                         {
+                            "pattern": "^(?<path>.*?)components(?<componentspath>.*?)\\.(?<ext>ts|tsx|js|jsx|css|sass|scss|less|html|htm|spec.ts|spec.js|test.js|test.ts)$",
+                            "alternatives": [
+                                "**/<path>components(?<componentspath>.*?).{ts,tsx,js,jsx}",
+                                "**/<path>components(?<componentspath>.*?).{html,htm}",
+                                "**/<path>components(?<componentspath>.*?).{css,sass,scss,less}",
+                                "**/<path>components(?<componentspath>.*?).{spec.js,spec.ts,test.js,test.ts}"
+                            ],
+                            "createFiles": {
+                                "<path>components<componentspath>.ts": true,
+                                "<path>components<componentspath>.scss": true,
+                                "<path>components<componentspath>.spec.ts": true,
+                                "<path>components<componentspath>.html": false
+                            }
+                        },
+                        {
                             "pattern": "^(?<path>.*?)\\.(ts|tsx|js|jsx|css|sass|scss|less|html|htm|spec.ts|spec.js|test.js|test.ts)$",
                             "alternatives": [
                                 "**/<path>.{ts,tsx,js,jsx}",
@@ -289,9 +304,7 @@
                             ],
                             "createFiles": {
                                 "<path>.ts": true,
-                                "<path>.scss": true,
-                                "<path>.spec.ts": true,
-                                "<path>.html": false
+                                "<path>.spec.ts": true
                             }
                         },
                         {

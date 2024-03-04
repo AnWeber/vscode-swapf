@@ -1,3 +1,8 @@
+## v1.6.0
+
+- restructure pattern config
+
+
 ## v1.5.0
 
 - add new command `swapf.createSwapFiles` to create missing files
