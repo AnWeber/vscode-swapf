@@ -52,6 +52,10 @@ export class CommandsProvider extends DisposeProvider {
       return;
     }
     if (this.#currentUris?.some(obj => this.equalsUri(obj, uri))) {
+      this.setSwapfContext({
+        hasAlternatives: true,
+        hasPatterns: true,
+      });
       return;
     }
     this.#currentUris = undefined;

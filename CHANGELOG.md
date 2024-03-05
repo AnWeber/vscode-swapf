@@ -1,3 +1,8 @@
+## v1.6.1
+
+- add missing context swapf.hasAlternatives
+
+
 ## v1.6.0
 
 - restructure pattern config

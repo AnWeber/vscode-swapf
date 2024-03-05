@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
