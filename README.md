@@ -7,8 +7,9 @@ swap between related files
 
 ## Features
 
-- swap between related files with command or editor title button
+- swap between related files with command or editor title button (Keybinding CTRL+B)
 - allow configuration of swap patterns
+- create missing File, for which a swap is configured (Keybinding CTRL+I)
 
 ## Default Swap Patterns
 

@@ -376,17 +376,17 @@
         ]
     },
     "devDependencies": {
-        "@types/node": "^20.11.24",
+        "@types/node": "^20.12.7",
         "@types/vscode": "^1.72.0",
-        "@typescript-eslint/eslint-plugin": "7.1.0",
-        "@typescript-eslint/parser": "7.1.0",
-        "esbuild": "^0.20.1",
+        "@typescript-eslint/eslint-plugin": "7.7.1",
+        "@typescript-eslint/parser": "7.7.1",
+        "esbuild": "^0.20.2",
         "eslint": "^8.57.0",
         "eslint-config-prettier": "^9.1.0",
         "husky": "^9.0.11",
         "lint-staged": "^15.2.2",
         "lockfile-lint": "^4.13.2",
         "prettier": "^3.2.5",
-        "typescript": "^5.3.3"
+        "typescript": "^5.4.5"
     }
 }
