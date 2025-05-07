@@ -2,6 +2,9 @@
 
 - add missing context swapf.hasAlternatives
 
+## v1.7.0
+
+- update components pattern to support Storybook
 
 ## v1.6.0
 

@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.6.1",
+    "version": "1.7.0",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
@@ -280,18 +280,20 @@
                     },
                     "default": [
                         {
-                            "pattern": "^(?<path>.*?)components(?<componentspath>.*?)\\.(?<ext>ts|tsx|js|jsx|css|sass|scss|less|html|htm|spec.ts|spec.js|test.js|test.ts)$",
+                            "pattern": "^(?<path>.*?)components(?<componentspath>.*?)\\.(?<ext>ts|tsx|js|jsx|css|sass|scss|less|html|htm|stories.ts|spec.ts|spec.js|test.js|test.ts)$",
                             "alternatives": [
-                                "**/<path>components(?<componentspath>.*?).{ts,tsx,js,jsx}",
-                                "**/<path>components(?<componentspath>.*?).{html,htm}",
-                                "**/<path>components(?<componentspath>.*?).{css,sass,scss,less}",
-                                "**/<path>components(?<componentspath>.*?).{spec.js,spec.ts,test.js,test.ts}"
+                                "**/<path>components<componentspath>.{ts,tsx,js,jsx}",
+                                "**/<path>components<componentspath>.{html,htm}",
+                                "**/<path>components<componentspath>.{css,sass,scss,less}",
+                                "**/<path>components<componentspath>.{spec.js,spec.ts,test.js,test.ts}",
+                                "**/<path>components<componentspath>.{stories.js,stories.ts}"
                             ],
                             "createFiles": {
                                 "<path>components<componentspath>.ts": true,
                                 "<path>components<componentspath>.scss": true,
                                 "<path>components<componentspath>.spec.ts": true,
-                                "<path>components<componentspath>.html": false
+                                "<path>components<componentspath>.html": false,
+                                "<path>components<componentspath>.stories.ts": false
                             }
                         },
                         {
@@ -343,7 +345,7 @@
                             ]
                         },
                         {
-                            "pattern": "^.*?(?<file>[^\/]*)$",
+                            "pattern": "^.*?(?<file>[^/]*)$",
                             "alternatives": [
                                 "**/<file>"
                             ]
@@ -361,7 +363,7 @@
         "start": "npm run esbuild -- --sourcemap --watch",
         "tsc-watch": "tsc --watch",
         "lockfile-lint": "lockfile-lint --path package-lock.json --validate-https --allowed-hosts npm --validate-checksum --validate-integrity",
-        "eslint": "eslint src --ext ts",
+        "eslint": "eslint .",
         "lint": "npm run format && npm run eslint && npm run lockfile-lint && tsc --noEmit",
         "prepare": "husky install",
         "package": "npx vsce package"
@@ -376,17 +378,18 @@
         ]
     },
     "devDependencies": {
-        "@types/node": "^20.12.7",
+        "@eslint/js": "^9.26.0",
+        "@types/node": "^22.15.15",
         "@types/vscode": "^1.72.0",
-        "@typescript-eslint/eslint-plugin": "7.7.1",
-        "@typescript-eslint/parser": "7.7.1",
-        "esbuild": "^0.25.0",
-        "eslint": "^8.57.0",
-        "eslint-config-prettier": "^9.1.0",
-        "husky": "^9.0.11",
-        "lint-staged": "^15.2.2",
-        "lockfile-lint": "^4.13.2",
-        "prettier": "^3.2.5",
-        "typescript": "^5.4.5"
+        "@typescript-eslint/eslint-plugin": "8.32.0",
+        "@typescript-eslint/parser": "8.32.0",
+        "esbuild": "^0.25.4",
+        "eslint": "^9.26.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.5.2",
+        "lockfile-lint": "^4.14.1",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.32.0"
     }
 }
