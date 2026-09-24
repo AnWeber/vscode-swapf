@@ -1,3 +1,8 @@
+## v1.8.0
+
+- add i18n alternatives
+
+
 ## v1.6.1
 
 - add missing context swapf.hasAlternatives

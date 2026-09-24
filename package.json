@@ -2,7 +2,7 @@
     "name": "swapf",
     "displayName": "SwapF",
     "description": "swap between related files",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "publisher": "anweber",
     "license": "ISC",
     "engines": {
@@ -338,6 +338,18 @@
                             ]
                         },
                         {
+                            "pattern": "^(?<path>.*?)\\.(?<lng>[a-zA-Z]{0,2}?)\\.(json)$",
+                            "alternatives": [
+                                "**/<path>.json",
+                                "**/<path>*.json"
+                            ],
+                            "createFiles": {
+                                "<path>.de.json": true,
+                                "<path>.en.json": true,
+                                "<path>.fr.json": true
+                            }
+                        },
+                        {
                             "pattern": "^(?<path>.*?)(cs)$",
                             "alternatives": [
                                 "**/<path>cs",
@@ -391,5 +403,8 @@
         "prettier": "^3.5.3",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.32.0"
+    },
+    "allowScripts": {
+        "esbuild@0.25.12": true
     }
 }
